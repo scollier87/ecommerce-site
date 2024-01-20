@@ -23,7 +23,6 @@ const Login = () => {
         console.log('Login successful');
         auth.setIsLoggedIn(true);
         navigate(from);
-        // Proceed with setting user context, redirecting, etc.
       } else {
         console.log('Login failed: Invalid username or password');
         setLoginError('Invalid username or password');
