@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation} from 'react-router-dom';
 import { AuthContext } from '../../App';
+import './Login.css'
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -34,8 +35,8 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
+    <div className='login-container'>
+      <form onSubmit={handleLogin} className='login-form'>
         <input
           type="text"
           id="login-username"
@@ -53,7 +54,7 @@ const Login = () => {
           placeholder="Password"
         />
         <button type="submit">Login</button>
-        {loginError && <p>{loginError}</p>}
+        {loginError && <p className='login-error'>{loginError}</p>}
       </form>
     </div>
   );
