@@ -10,19 +10,35 @@ const hashPassword = (password) => {
 };
 
 const fetchUserData = async (username) => {
-  const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users.json`);
-  if (!response.ok) throw new Error('Failed to fetch user data');
-
-  const users = await response.json();
-  let userData = null;
-  for (const key in users) {
-    if (users[key].username.toLowerCase() === username.toLowerCase()) {
-      userData = { uid: key, ...users[key] };
-      break;
+  try {
+    const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users.json`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
     }
+
+    const users = await response.json();
+    console.log('Fetched users data:', users);
+
+    let userData = null;
+    for (const key in users) {
+      if (users[key].username.toLowerCase() === username.toLowerCase()) {
+        userData = { uid: key, ...users[key] };
+        console.log('User data found:', userData);
+        break;
+      }
+    }
+
+    if (!userData) {
+      console.log('User not found for username:', username);
+    }
+
+    return userData;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    throw error;
   }
-  return userData;
 };
+
 
 
 const Login = () => {
@@ -33,7 +49,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
   const { from } = location.state || { from: { pathname: '/' } };
 
   const handleLogin = async (event) => {
@@ -43,6 +59,14 @@ const Login = () => {
       if (userData && userData.password === hashPassword(password)) {
         console.log('Login successful');
         setIsLoggedIn(true);
+
+        setUser(userData);
+        console.log('User data after setUser:', userData);
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('User data stored in localStorage:', userData);
+
         navigate(from);
       } else {
         setLoginError('Invalid username or password');

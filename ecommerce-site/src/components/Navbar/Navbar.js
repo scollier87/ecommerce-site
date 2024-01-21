@@ -10,6 +10,9 @@ const NavBar = () => {
 
     const handleLogout = () => {
         auth.setIsLoggedIn(false);
+        auth.setUser(null);
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('user');
         navigate('/');
     }
 

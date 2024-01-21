@@ -9,37 +9,58 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
-    if (isLoggedIn && user) {
-      const newCartItem = { ...product, quantity: 1 }; // Define your cart item structure
-      const updatedCart = [...cart, newCartItem];
-      setCart(updatedCart);
-      updateCartInFirebase(user.id, updatedCart); // Assuming user.id is the unique identifier for the user
-    } else {
+    console.log('isLoggedIn:', isLoggedIn);
+    console.log('user:', user);
+    if (!isLoggedIn || !user) {
       navigate('/login');
+      return;
     }
+
+    const itemIndex = cart.findIndex((item) => item.id === product.id);
+
+    let updatedCart;
+    if (itemIndex > -1) {
+      updatedCart = cart.map((item, index) =>
+        index === itemIndex ? { ...item, quantity: item.quantity + 1 } : item
+      );
+    } else {
+      updatedCart = [...cart, { ...product, quantity: 1 }];
+    }
+
+    setCart(updatedCart);
+    updateCartInFirebase(user.uid, updatedCart);
   };
 
+
   const updateCartInFirebase = async (userId, updatedCart) => {
-    if (!userId) return; // Do not proceed if userId is not set
+    if (!userId) {
+      console.error("Can't update the cart without a user ID.");
+      return;
+    }
 
     try {
       const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/Users/${userId}/cart.json`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedCart)
+        body: JSON.stringify(updatedCart),
       });
 
       if (!response.ok) {
         throw new Error('Could not update cart in Firebase.');
       }
 
-      console.log('Cart updated in Firebase.');
+      const responseBody = await response.json();
+      console.log('Response from Firebase:', responseBody);
+
+      console.log('Cart updated in Firebase for user:', userId);
     } catch (error) {
       console.error('Error updating cart in Firebase:', error);
     }
   };
+
+
 
   if (!product) {
     return null;
@@ -63,4 +84,3 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
-

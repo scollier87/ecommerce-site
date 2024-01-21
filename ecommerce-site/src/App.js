@@ -1,5 +1,4 @@
-// src/App.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar/NavBar';
 import Home from './components/Splash/Splash';
@@ -7,17 +6,53 @@ import Login from './components/Login/Login';
 import Shop from './components/Shop/Shop';
 import Cart from './components/Cart/Cart';
 
-export const AuthContext = React.createContext(null);
-export const CartContext = React.createContext();
+export const AuthContext = React.createContext({
+  isLoggedIn: false,
+  user: null,
+  setIsLoggedIn: () => {},
+  setUser: () => {}
+});
+
+export const CartContext = React.createContext({
+  cart: [],
+  setCart: () => {}
+});
 
 function App() {
+  const getInitialValue = (key, defaultValue) => {
+    const storedValue = localStorage.getItem(key);
+    if (storedValue === null) {
+      return defaultValue;
+    }
+    try {
+      return JSON.parse(storedValue);
+    } catch (error) {
+      console.error(`Error parsing local storage for key ${key}:`, error);
+      return defaultValue;
+    }
+  };
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [cart, setCart] = useState([])
+  const [isLoggedIn, setIsLoggedIn] = useState(() => getInitialValue('isLoggedIn', false));
+  const [user, setUser] = useState(() => getInitialValue('user', null));
+  const [cartItems, setCartItems] = useState(() => getInitialValue('cart', []));
+
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      // User is logged in, store the data in localStorage
+      localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      // User is logged out, clear the data from localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('user');
+    }
+  }, [isLoggedIn, user]);
+
+
 
   return (
-    <AuthContext.Provider value={{isLoggedIn, setIsLoggedIn}}>
-      <CartContext.Provider value={{ cart, setCart}}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
+      <CartContext.Provider value={{ cart: cartItems, setCart: setCartItems }}>
         <Router>
           <NavBar />
           <Routes>
