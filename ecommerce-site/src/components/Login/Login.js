@@ -10,20 +10,20 @@ const hashPassword = (password) => {
 };
 
 const fetchUserData = async (username) => {
-  const safeUsername = encodeURIComponent(username);
-  const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users.json?orderBy="username"&equalTo="${safeUsername}"`);
+  const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users.json`);
   if (!response.ok) throw new Error('Failed to fetch user data');
 
   const users = await response.json();
   let userData = null;
   for (const key in users) {
-    if (users[key].username === username) {
+    if (users[key].username.toLowerCase() === username.toLowerCase()) {
       userData = { uid: key, ...users[key] };
       break;
     }
   }
   return userData;
 };
+
 
 const Login = () => {
   const [isRegistering, setIsRegistering] = useState(false);
