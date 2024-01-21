@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../../App';
+import { AuthContext, CartContext } from '../../App';
 import { v4 as uuidv4 } from 'uuid'; // Importing UUID for generating user IDs
 import './Login.css'
+import { fetchUserCart } from '../utils/cartUtils';
 
 // Placeholder function for password hashing
 const hashPassword = (password) => {
@@ -50,6 +51,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { setCartItems } = useContext(CartContext)
   const { from } = location.state || { from: { pathname: '/' } };
 
   const handleLogin = async (event) => {
@@ -67,12 +69,17 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(userData));
         console.log('User data stored in localStorage:', userData);
 
+        const userCart = await fetchUserCart(userData.uid);
+        setCartItems(userCart);
+        localStorage.setItem('cart', JSON.stringify(userCart));
+
         navigate(from);
       } else {
         setLoginError('Invalid username or password');
       }
     } catch (error) {
-      setLoginError('Login failed due to a technical issue.');
+      console.error('Login failed due to a technical issue.', error);
+      setLoginError(`Login failed due to: ${error.message}`);
     }
   };
 

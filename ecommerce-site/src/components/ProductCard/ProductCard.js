@@ -5,32 +5,32 @@ import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { isLoggedIn, user } = useContext(AuthContext);
-  const { cart, setCart } = useContext(CartContext);
+  const { cartItems, setCartItems } = useContext(CartContext);
   const navigate = useNavigate();
 
-  const handleAddToCart = () => {
-    console.log('isLoggedIn:', isLoggedIn);
-    console.log('user:', user);
-    if (!isLoggedIn || !user) {
+  const handleAddToCart = async () => {
+    if (!isLoggedIn) {
       navigate('/login');
       return;
     }
 
-    const itemIndex = cart.findIndex((item) => item.id === product.id);
+    // Check if the product is already in the cart
+    const existingCartItemIndex = cartItems.findIndex(item => item.id === product.id);
 
-    let updatedCart;
-    if (itemIndex > -1) {
-      updatedCart = cart.map((item, index) =>
-        index === itemIndex ? { ...item, quantity: item.quantity + 1 } : item
+    let updatedCartItems;
+    if (existingCartItemIndex !== -1) {
+      // Product is already in the cart, so update the quantity
+      updatedCartItems = cartItems.map((item, index) =>
+        index === existingCartItemIndex ? { ...item, quantity: item.quantity + 1 } : item
       );
     } else {
-      updatedCart = [...cart, { ...product, quantity: 1 }];
+      // Product is not in the cart, so add it with quantity 1
+      updatedCartItems = [...cartItems, { ...product, quantity: 1 }];
     }
 
-    setCart(updatedCart);
-    updateCartInFirebase(user.uid, updatedCart);
+    setCartItems(updatedCartItems);
+    await updateCartInFirebase(user.uid, updatedCartItems);
   };
-
 
   const updateCartInFirebase = async (userId, updatedCart) => {
     if (!userId) {
@@ -39,7 +39,7 @@ const ProductCard = ({ product }) => {
     }
 
     try {
-      const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/Users/${userId}/cart.json`, {
+      const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${userId}/cart.json`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -51,16 +51,11 @@ const ProductCard = ({ product }) => {
         throw new Error('Could not update cart in Firebase.');
       }
 
-      const responseBody = await response.json();
-      console.log('Response from Firebase:', responseBody);
-
       console.log('Cart updated in Firebase for user:', userId);
     } catch (error) {
       console.error('Error updating cart in Firebase:', error);
     }
   };
-
-
 
   if (!product) {
     return null;

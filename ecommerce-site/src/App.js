@@ -14,8 +14,8 @@ export const AuthContext = React.createContext({
 });
 
 export const CartContext = React.createContext({
-  cart: [],
-  setCart: () => {}
+  cartItems: [],
+  setCartItems: () => {}
 });
 
 function App() {
@@ -34,25 +34,28 @@ function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(() => getInitialValue('isLoggedIn', false));
   const [user, setUser] = useState(() => getInitialValue('user', null));
-  const [cartItems, setCartItems] = useState(() => getInitialValue('cart', []));
+  const [cartItems, setCartItems] = useState(() => getInitialValue('cartItems', []));
 
   useEffect(() => {
     if (isLoggedIn && user) {
       // User is logged in, store the data in localStorage
       localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('cart', JSON.stringify(cartItems));
     } else {
       // User is logged out, clear the data from localStorage
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
+      localStorage.removeItem('cart');
     }
-  }, [isLoggedIn, user]);
+  }, [isLoggedIn, user, cartItems]);
+
 
 
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
-      <CartContext.Provider value={{ cart: cartItems, setCart: setCartItems }}>
+      <CartContext.Provider value={{ cartItems, setCartItems }}>
         <Router>
           <NavBar />
           <Routes>

@@ -1,18 +1,22 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../App';
+import { AuthContext, CartContext } from '../../App'; // Import CartContext as well
 import './NavBar.css';
 
 const NavBar = () => {
-    const auth = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn, setUser } = useContext(AuthContext); // Destructure the needed functions
+    const { setCartItems } = useContext(CartContext); // Destructure setCart from CartContext
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleLogout = () => {
-        auth.setIsLoggedIn(false);
-        auth.setUser(null);
+        setIsLoggedIn(false); // Use the destructured function
+        setUser(null); // Use the destructured function
+        setCartItems([]); // Clear the cart using setCart from CartContext
+        // Remove items from local storage
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
+        localStorage.removeItem('cart');
         navigate('/');
     }
 
@@ -25,7 +29,7 @@ const NavBar = () => {
                 <Link to="/">Home</Link>
                 <Link to="/shop">Shop</Link>
                 <Link to="/cart">Cart</Link>
-                {auth.isLoggedIn ? (
+                {isLoggedIn ? ( // Use the destructured isLoggedIn
                     <button onClick={handleLogout} className="sign-out-button">Sign Out</button>
                 ) : (
                     <Link to="/login" state={{from: location.pathname}}>Login</Link> // Only show when not logged in
