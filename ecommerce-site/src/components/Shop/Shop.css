@@ -5,3 +5,22 @@
     margin: 20px 20px;
     /* border: 1px solid black; */
 }
+
+.view-item-button {
+    background-color: white;
+    color: #1a1a1a;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
+    margin: 5px 0;
+    justify-self: center;
+    align-self: center;
+}
+
+.product-container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
