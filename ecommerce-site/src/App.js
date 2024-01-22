@@ -44,7 +44,7 @@ function App() {
     } else {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
-      localStorage.removeItem('cart');
+      localStorage.removeItem('cartItems');
     }
   }, [isLoggedIn, user]);
 

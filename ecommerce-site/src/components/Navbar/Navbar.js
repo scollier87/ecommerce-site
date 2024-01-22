@@ -18,7 +18,7 @@ const NavBar = () => {
         setCartItems([]);
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
-        localStorage.removeItem('cart');
+        localStorage.removeItem('cartItems');
         navigate('/');
     }
 
