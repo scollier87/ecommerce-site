@@ -1,36 +1,59 @@
 .cart-container {
     padding: 20px;
     max-width: 800px;
-    margin: auto;
-  }
+    margin: 50px auto; /* Added more margin to the top and bottom */
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    border-radius: 8px; /* Optional: rounds the corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+}
 
-  .cart-item {
+.cart-item {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 20px;
-  }
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for each item */
+}
 
-  .cart-item img {
+.cart-item img {
     width: 100px;
     height: auto;
-    margin-right: 20px;
-  }
+    /* margin-right: 20px; */
+}
 
-  .cart-item-details {
+.cart-item-details {
     flex-grow: 1;
-  }
+}
 
-  .remove-from-cart-button {
+.remove-from-cart-button {
+    display: block;
+    width: fit-content; /* Only as wide as its content */
+    margin: 10px auto; /* Center horizontally */
     background-color: #ff4d4f;
     color: white;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 5px;
-  }
+}
 
-  .remove-from-cart-button:hover {
+.remove-from-cart-button:hover {
     background-color: #ff7875;
-  }
+}
+
+.cart-summary {
+    text-align: right;
+    margin-top: 20px; /* Adds space above the cart summary */
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0; /* Adjust as needed */
+}
+
+.quantity-controls button {
+    margin: 0 5px; /* Spacing between buttons */
+}

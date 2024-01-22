@@ -5,6 +5,7 @@ import Home from './components/Splash/Splash';
 import Login from './components/Login/Login';
 import Shop from './components/Shop/Shop';
 import Cart from './components/Cart/Cart';
+import './App.css'
 
 export const AuthContext = React.createContext({
   isLoggedIn: false,
@@ -37,21 +38,19 @@ function App() {
   const [cartItems, setCartItems] = useState(() => getInitialValue('cartItems', []));
 
   useEffect(() => {
-    if (isLoggedIn && user) {
-      // User is logged in, store the data in localStorage
+    if (isLoggedIn) {
       localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('cart', JSON.stringify(cartItems));
     } else {
-      // User is logged out, clear the data from localStorage
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
       localStorage.removeItem('cart');
     }
-  }, [isLoggedIn, user, cartItems]);
+  }, [isLoggedIn, user]);
 
-
-
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>

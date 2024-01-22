@@ -71,7 +71,7 @@ const Login = () => {
 
         const userCart = await fetchUserCart(userData.uid);
         setCartItems(userCart);
-        localStorage.setItem('cart', JSON.stringify(userCart));
+        localStorage.setItem('cartItems', JSON.stringify(userCart));
 
         navigate(from);
       } else {

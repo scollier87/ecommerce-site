@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CartContext, AuthContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import './Cart.css';
@@ -8,11 +8,24 @@ const Cart = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("Cart component mounted");
+    const storedCart = localStorage.getItem('cartItems');
+    console.log("Stored cart from localStorage:", storedCart);
+    if (storedCart && storedCart.length > 0) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, [setCartItems]);
+
+
   const updateQuantity = async (productId, newQuantity) => {
+    console.log("Updating quantity for product:", productId, "New quantity:", newQuantity);
     const existingCartItem = cartItems.find(item => item.id === productId);
 
     // Prevent negative quantities and exceeding stock count
-    if (newQuantity < 0 || (existingCartItem && newQuantity > existingCartItem.stock)) return;
+    if (newQuantity < 0 || (existingCartItem && newQuantity > existingCartItem.stock)){
+    console.log("Invalid quantity update attempted");
+    return};
 
     let updatedCartItems;
 
@@ -25,7 +38,7 @@ const Cart = () => {
         item.id === productId ? { ...item, quantity: newQuantity } : item
       );
     }
-
+    console.log("Cart items after quantity update:", updatedCartItems);
     setCartItems(updatedCartItems);
     await updateCartInFirebase(user.uid, updatedCartItems);
   };
@@ -35,14 +48,15 @@ const Cart = () => {
   };
 
   const removeFromCart = async (productId) => {
-    // Filter out the item to be removed
+    console.log("Removing product from cart:", productId);
     const updatedCartItems = cartItems.filter(item => item.id !== productId);
-
+    console.log("Cart items after removal:", updatedCartItems);
     setCartItems(updatedCartItems);
     await updateCartInFirebase(user.uid, updatedCartItems);
   };
 
   const updateCartInFirebase = async (userId, updatedCart) => {
+    console.log("Updating cart in Firebase for user:", userId);
     if (!userId) {
       console.error("Can't update the cart without a user ID.");
       return;
@@ -58,6 +72,7 @@ const Cart = () => {
       if (!response.ok) {
         throw new Error('Could not update cart in Firebase.');
       }
+      console.log("Cart update response from Firebase:", await response.json());
     } catch (error) {
       console.error('Error updating cart in Firebase:', error);
     }
