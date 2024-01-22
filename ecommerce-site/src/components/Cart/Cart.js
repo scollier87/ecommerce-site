@@ -1,14 +1,18 @@
 import React, { useContext } from 'react';
 import { CartContext, AuthContext } from '../../App';
+import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
 const Cart = () => {
   const { cartItems, setCartItems } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const updateQuantity = async (productId, newQuantity) => {
-    // Prevent negative quantities
-    if (newQuantity < 0) return;
+    const existingCartItem = cartItems.find(item => item.id === productId);
+
+    // Prevent negative quantities and exceeding stock count
+    if (newQuantity < 0 || (existingCartItem && newQuantity > existingCartItem.stock)) return;
 
     let updatedCartItems;
 
@@ -24,6 +28,10 @@ const Cart = () => {
 
     setCartItems(updatedCartItems);
     await updateCartInFirebase(user.uid, updatedCartItems);
+  };
+
+  const handleContinueShopping = () => {
+    navigate('/shop'); // Navigate to the shop page
   };
 
   const removeFromCart = async (productId) => {
@@ -78,14 +86,17 @@ const Cart = () => {
             </div>
             <p>In Stock: {item.stock}</p>
             <p>Subtotal: ${(item.quantity * item.price).toFixed(2)}</p>
+            <button onClick={() => removeFromCart(item.id)} className='remove-from-cart-button'>Remove</button>
           </div>
-          <button onClick={() => removeFromCart(item.id)} className='remove-from-cart-button'>Remove</button>
         </div>
       ))}
       <div className="cart-summary">
         <p>Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
-        {/* You can add Checkout button and other functionalities here */}
+        {/* Checkout button location */}
       </div>
+      <button onClick={handleContinueShopping} className="continue-shopping-button">
+          Continue Shopping
+      </button>
     </div>
   );
 };
