@@ -30,6 +30,8 @@ const ProductCard = ({ product }) => {
 
     setCartItems(updatedCartItems);
     await updateCartInFirebase(user.uid, updatedCartItems);
+
+    navigate('/cart');
   };
 
   const updateCartInFirebase = async (userId, updatedCart) => {
