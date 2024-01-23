@@ -36,6 +36,7 @@ const Orders = () => {
               status: orderData.status,
               totalPrice: orderData.totalPrice,
               userId: orderData.userId,
+              datePlaced: orderData.datePlaced,
             };
           });
           setOrders(loadedOrders);
@@ -63,20 +64,25 @@ const Orders = () => {
       <div className="order-list">
         {orders.map((order) => (
           <div key={order.id} className="order-item">
-            <p>Order ID: {order.id}</p>
-            <p>Address: {order.address}</p>
-            <p>Phone: {order.phone}</p>
-            <p>Total Price: {order.totalPrice}</p>
-            <p>Status: {order.status}</p>
+            <div className="order-item-header order-details">
+              <p><strong>Order ID:</strong> {order.id}</p>
+              <p><strong>Date Ordered:</strong> {order.datePlaced}</p>
+              <p><strong>Address:</strong> {order.address}</p>
+              <p><strong>Phone:</strong> {order.phone}</p>
+              <p><strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}</p>
+              <p><strong>Status:</strong> {order.status}</p>
+            </div>
+            <div className='divider'></div>
             {order.items && order.items.length > 0 && (
-              <div>
+              <div className='order-items-container'>
                 <h3>Items:</h3>
                 <ul>
                   {order.items.map((item, index) => (
                     <li key={index} className="order-item-detail">
                       <img src={item.imageUrl} alt="Product" className="order-item-image" />
                       <div className="order-item-info">
-                        <p>Quantity: {item.quantity}</p>
+                        <p><strong>Item:</strong> {item.name}</p>
+                        <p><strong>Quantity:</strong> {item.quantity}</p>
                       </div>
                     </li>
                   ))}

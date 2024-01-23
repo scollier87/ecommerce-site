@@ -16,9 +16,23 @@ const Order = () => {
 
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  const formatDate = (date) => {
+    const twoDigit = (num) => num.toString().padStart(2, '0');
+
+    let month = twoDigit(date.getMonth() + 1); // months are 0-based in JavaScript
+    let day = twoDigit(date.getDate());
+    let year = date.getFullYear().toString().slice(-2); // get the last two digits of the year
+    let hours = twoDigit(date.getHours());
+    let minutes = twoDigit(date.getMinutes());
+
+    return `${month}/${day}/${year}, ${hours}:${minutes}`;
+  };
+
   const confirmOrder = async () => {
     setLoading(true);
     setError(null);
+
+  const orderDate = new Date();
 
     try {
       for (const item of cartItems) {
@@ -45,6 +59,7 @@ const Order = () => {
         phone,
         specialInstructions,
         status: 'pending',
+        datePlaced: formatDate(orderDate),
       };
 
       await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${user.uid}/Orders.json`, {
