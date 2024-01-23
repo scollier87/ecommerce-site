@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext, CartContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../Modal/Modal';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { isLoggedIn, user } = useContext(AuthContext);
   const { cartItems, setCartItems } = useContext(CartContext);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
@@ -60,6 +62,9 @@ const ProductCard = ({ product }) => {
     return null;
   }
 
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   const isOutOfStock = product.stock === 0;
 
   return (
@@ -79,6 +84,18 @@ const ProductCard = ({ product }) => {
         >
         Add to Cart
       </button>
+      <button onClick={openModal} className="view-item-button">
+        View Item
+      </button>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <div>
+          <h2>{product.name}</h2>
+          <img src={product.imageUrl} alt={product.name} />
+          <p>Price: ${product.price.toFixed(2)}</p>
+          {/* Other details */}
+        </div>
+      </Modal>
       </div>
     </div>
   );

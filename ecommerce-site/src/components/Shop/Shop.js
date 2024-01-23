@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../ProductCard/ProductCard';
-import Modal from '../Modal/Modal';
 import './Shop.css';
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,7 +13,7 @@ const Shop = () => {
         const loadedProducts = [];
 
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
             loadedProducts.push({
               id: key,
               ...data[key],
@@ -34,49 +31,21 @@ const Shop = () => {
     fetchProducts();
   }, []);
 
-  const openModal = product => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  }
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-  }
-
   return (
     <div className="shop-container">
       {products.length > 0 ? (
         products.map((product) => {
           if (!product || !product.imageUrl || !product.name || typeof product.price !== 'number') {
-            return null;
+            return null; // Skip rendering this product if it doesn't have the required fields
           }
-
-          return (
-            <div key={product.id} className="product-container">
-              <ProductCard product={product} />
-              <button onClick={() => openModal(product)} className="view-item-button">
-                View Item
-              </button>
-            </div>
-          );
+          return <ProductCard key={product.id} product={product} />; // Render the ProductCard
         })
       ) : (
         <p>Loading products...</p>
       )}
-
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        {selectedProduct && (
-          <div>
-            <h2>{selectedProduct.name}</h2>
-            <img src={selectedProduct.imageUrl} alt={selectedProduct.name} />
-            <p>Price: ${selectedProduct.price.toFixed(2)}</p>
-            {/* Include any other product details you want to show in the modal */}
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
 
 export default Shop;
+
