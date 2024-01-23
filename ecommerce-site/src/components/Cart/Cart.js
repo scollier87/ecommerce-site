@@ -86,6 +86,10 @@ const Cart = () => {
     return <p>Your cart is empty.</p>;
   }
 
+  const handleProceedToOrder = () => {
+    navigate('/order')
+  };
+
   return (
     <div className="cart-container">
       {cartItems.map((item) => (
@@ -105,15 +109,20 @@ const Cart = () => {
           </div>
         </div>
       ))}
-      <div className="cart-summary">
-        <p>Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
-        {/* Checkout button location */}
-      </div>
+      {cartItems.length > 0 && (
+        <div className="cart-summary">
+          <p>Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
+          <button onClick={handleProceedToOrder} className="proceed-to-order-button">
+            Proceed to Checkout
+          </button>
+        </div>
+      )}
       <button onClick={handleContinueShopping} className="continue-shopping-button">
-          Continue Shopping
+        Continue Shopping
       </button>
     </div>
   );
+
 };
 
 export default Cart;
