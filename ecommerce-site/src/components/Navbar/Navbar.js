@@ -31,10 +31,11 @@ const NavBar = () => {
                 <Link to="/">Home</Link>
                 <Link to="/shop">Shop</Link>
                 <Link to="/cart">Cart ({totalQuantity})</Link>
+                <Link to="/viewOrders">Orders</Link>
                 {isLoggedIn ? (
                     <button onClick={handleLogout} className="sign-out-button">Sign Out</button>
                 ) : (
-                    <Link to="/login" state={{from: location.pathname}}>Login</Link> // Only show when not logged in
+                    <Link to="/login" state={{from: location.pathname}}>Login</Link>
                 )}
             </div>
         </nav>

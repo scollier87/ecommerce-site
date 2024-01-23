@@ -14,17 +14,14 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    // Check if the product is already in the cart
     const existingCartItemIndex = cartItems.findIndex(item => item.id === product.id);
 
     let updatedCartItems;
     if (existingCartItemIndex !== -1) {
-      // Product is already in the cart, so update the quantity
       updatedCartItems = cartItems.map((item, index) =>
         index === existingCartItemIndex ? { ...item, quantity: item.quantity + 1 } : item
       );
     } else {
-      // Product is not in the cart, so add it with quantity 1
       updatedCartItems = [...cartItems, { ...product, quantity: 1 }];
     }
 
@@ -63,6 +60,8 @@ const ProductCard = ({ product }) => {
     return null;
   }
 
+  const isOutOfStock = product.stock === 0;
+
   return (
     <div className="product-card">
       <div className="product-image-container">
@@ -72,9 +71,14 @@ const ProductCard = ({ product }) => {
       <div className="product-details">
         <h3>{product.name}</h3>
         <p className="price">${product.price}</p>
-        <button onClick={handleAddToCart} className="add-to-cart-button">
-          Add to Cart
-        </button>
+        <p>{isOutOfStock ? 'Out of Stock' : `In Stock: ${product.stock}`}</p>
+        <button
+        onClick={handleAddToCart}
+        disabled={isOutOfStock}
+        className={`add-to-cart-button ${isOutOfStock ? 'disabled' : ''}`}
+        >
+        Add to Cart
+      </button>
       </div>
     </div>
   );

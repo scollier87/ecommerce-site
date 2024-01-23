@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext, CartContext } from '../../App';
-import { v4 as uuidv4 } from 'uuid'; // Importing UUID for generating user IDs
+import { v4 as uuidv4 } from 'uuid';
 import './Login.css'
 import { fetchUserCart } from '../utils/cartUtils';
 

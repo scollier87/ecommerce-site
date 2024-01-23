@@ -30,10 +30,8 @@ const Cart = () => {
     let updatedCartItems;
 
     if (newQuantity === 0) {
-      // Filter out the item with zero quantity
       updatedCartItems = cartItems.filter(item => item.id !== productId);
     } else {
-      // Update the quantity of the item
       updatedCartItems = cartItems.map(item =>
         item.id === productId ? { ...item, quantity: newQuantity } : item
       );
@@ -95,12 +93,12 @@ const Cart = () => {
       {cartItems.map((item) => (
         <div key={item.id} className="cart-item">
           <img src={item.imageUrl} alt={item.name} />
-          <div>
-            <p>{item.name}</p>
-            <p>${item.price.toFixed(2)}</p>
+          <div className="cart-item-details">
+            <h4>{item.name}</h4>
+            <p>Price: ${item.price.toFixed(2)}</p>
             <div className="quantity-controls">
               <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-              <span> {item.quantity} </span>
+              <span>{item.quantity}</span>
               <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
             </div>
             <p>In Stock: {item.stock}</p>
@@ -109,19 +107,22 @@ const Cart = () => {
           </div>
         </div>
       ))}
-      {cartItems.length > 0 && (
-        <div className="cart-summary">
-          <p>Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
-          <button onClick={handleProceedToOrder} className="proceed-to-order-button">
-            Proceed to Checkout
-          </button>
-        </div>
-      )}
-      <button onClick={handleContinueShopping} className="continue-shopping-button">
-        Continue Shopping
-      </button>
+      <div className="cart-actions">
+        {cartItems.length > 0 && (
+          <div className="cart-summary">
+            <p className="cart-total">Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
+            <button onClick={handleProceedToOrder} className="proceed-to-order-button">
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+        <button onClick={handleContinueShopping} className="continue-shopping-button">
+          Continue Shopping
+        </button>
+      </div>
     </div>
   );
+
 
 };
 

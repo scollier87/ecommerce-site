@@ -1,4 +1,3 @@
-// src/components/Home/Home.js
 import React from 'react';
 import './Splash.css'
 
