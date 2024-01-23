@@ -5,6 +5,7 @@ import Home from './components/Splash/Splash';
 import Login from './components/Login/Login';
 import Shop from './components/Shop/Shop';
 import Cart from './components/Cart/Cart';
+import Order from './components/Order/Order';
 import './App.css'
 
 export const AuthContext = React.createContext({
@@ -62,6 +63,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/order" element={<Order />} />
           </Routes>
         </Router>
       </CartContext.Provider>
