@@ -81,7 +81,7 @@ const Cart = () => {
   }
 
   if (cartItems.length === 0) {
-    return <p>Your cart is empty.</p>;
+    return <p className='cart-empty-message'>Your cart is empty.</p>;
   }
 
   const handleProceedToOrder = () => {
@@ -117,7 +117,7 @@ const Cart = () => {
           </div>
         )}
         <button onClick={handleContinueShopping} className="continue-shopping-button">
-          Continue Shopping
+          <p className='continue-shopping'>Continue Shopping</p>
         </button>
       </div>
     </div>
