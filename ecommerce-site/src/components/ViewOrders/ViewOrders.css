@@ -98,3 +98,16 @@
     background-color: #e2e2e2;
     margin: 0 20px;
 }
+
+.error-message {
+    display: block;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1.5em;
+    text-align: center;
+  }
