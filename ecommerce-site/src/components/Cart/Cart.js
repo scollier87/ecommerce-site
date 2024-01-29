@@ -47,13 +47,11 @@ const Cart = () => {
   };
 
   const updateQuantity = (productId, newQuantity) => {
-    // Prevent invalid quantity updates
     if (newQuantity < 1) {
       console.log("Invalid quantity. Minimum quantity is 1.");
       return;
     }
 
-    // Find the item to update
     const updatedCartItems = cartItems.map((item) => {
       if (item.id === productId) {
         return { ...item, quantity: newQuantity };
