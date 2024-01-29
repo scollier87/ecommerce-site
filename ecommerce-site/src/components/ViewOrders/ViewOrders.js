@@ -55,7 +55,7 @@ const Orders = () => {
   }, [user]);
 
   if (loading) return <div className="loading">Loading orders...</div>;
-  if (error) return <div className='error-message'>Error: {error}</div>;
+  if (error) return <div className='error-message'>Error: {error}</div>; //fix this soon.
   if (orders.length === 0) return <p>You have no orders yet.</p>;
 
   return (

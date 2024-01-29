@@ -5,124 +5,113 @@ import './Cart.css';
 
 const Cart = () => {
   const { cartItems, setCartItems } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
+  const { isLoggedIn, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const fetchCartFromFirebase = async (userId) => {
+    const url = `https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${userId}/cart.json`;
+    try {
+      const response = await fetch(url);
+      const cartData = await response.json();
+      if (!response.ok) throw new Error('Failed to fetch cart.');
+      setCartItems(cartData ? Object.values(cartData) : []);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  };
+
+  // Fetch cart from Firebase when user logs in
   useEffect(() => {
-    console.log("Cart component mounted");
-    const storedCart = localStorage.getItem('cartItems');
-    console.log("Stored cart from localStorage:", storedCart);
-    if (storedCart && storedCart.length > 0) {
-      setCartItems(JSON.parse(storedCart));
+    if (user && user.uid) {
+      fetchCartFromFirebase(user.uid);
     }
-  }, [setCartItems]);
+  }, [user, setCartItems]);
 
-
-  const updateQuantity = async (productId, newQuantity) => {
-    console.log("Updating quantity for product:", productId, "New quantity:", newQuantity);
-    const existingCartItem = cartItems.find(item => item.id === productId);
-
-    // Prevent negative quantities and exceeding stock count
-    if (newQuantity < 0 || (existingCartItem && newQuantity > existingCartItem.stock)){
-    console.log("Invalid quantity update attempted");
-    return};
-
-    let updatedCartItems;
-
-    if (newQuantity === 0) {
-      updatedCartItems = cartItems.filter(item => item.id !== productId);
-    } else {
-      updatedCartItems = cartItems.map(item =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      );
-    }
-    console.log("Cart items after quantity update:", updatedCartItems);
-    setCartItems(updatedCartItems);
-    await updateCartInFirebase(user.uid, updatedCartItems);
-  };
-
-  const handleContinueShopping = () => {
-    navigate('/shop'); // Navigate to the shop page
-  };
-
-  const removeFromCart = async (productId) => {
-    console.log("Removing product from cart:", productId);
-    const updatedCartItems = cartItems.filter(item => item.id !== productId);
-    console.log("Cart items after removal:", updatedCartItems);
-    setCartItems(updatedCartItems);
-    await updateCartInFirebase(user.uid, updatedCartItems);
-  };
-
-  const updateCartInFirebase = async (userId, updatedCart) => {
-    console.log("Updating cart in Firebase for user:", userId);
-    if (!userId) {
+  const updateCartInFirebaseAndLocally = async (updatedCartItems) => {
+    if (!user || !user.uid) {
       console.error("Can't update the cart without a user ID.");
       return;
     }
 
+    const url = `https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${user.uid}/cart.json`;
     try {
-      const response = await fetch(`https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${userId}/cart.json`, {
+      await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCart),
+        body: JSON.stringify(updatedCartItems),
       });
-
-      if (!response.ok) {
-        throw new Error('Could not update cart in Firebase.');
-      }
-      console.log("Cart update response from Firebase:", await response.json());
+      setCartItems(updatedCartItems);
     } catch (error) {
       console.error('Error updating cart in Firebase:', error);
     }
   };
 
-  if (!cartItems) {
-    return <p>Loading cart...</p>;
-  }
+  const updateQuantity = (productId, newQuantity) => {
+    // Prevent invalid quantity updates
+    if (newQuantity < 1) {
+      console.log("Invalid quantity. Minimum quantity is 1.");
+      return;
+    }
 
-  if (cartItems.length === 0) {
-    return <p className='cart-empty-message'>Your cart is empty.</p>;
-  }
+    // Find the item to update
+    const updatedCartItems = cartItems.map((item) => {
+      if (item.id === productId) {
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    });
 
-  const handleProceedToOrder = () => {
-    navigate('/order')
+    // Update the cart in Firebase and locally
+    updateCartInFirebaseAndLocally(updatedCartItems);
+  };
+
+
+  const handleContinueShopping = () => navigate('/shop');
+  const handleProceedToOrder = () => navigate('/order');
+
+  const removeFromCart = (productId) => {
+    const updatedCartItems = cartItems.filter(item => item.id !== productId);
+    updateCartInFirebaseAndLocally(updatedCartItems);
   };
 
   return (
     <div className="cart-container">
-      {cartItems.map((item) => (
-        <div key={item.id} className="cart-item">
-          <img src={item.imageUrl} alt={item.name} />
-          <div className="cart-item-details">
-            <h4>{item.name}</h4>
-            <p>Price: ${item.price.toFixed(2)}</p>
-            <div className="quantity-controls">
-              <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-              <span>{item.quantity}</span>
-              <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+      {cartItems.length > 0 ? (
+        cartItems.map((item) => (
+          <div key={item.id} className="cart-item">
+            <img src={item.imageUrl} alt={item.name} />
+            <div className="cart-item-details">
+              <h4>{item.name}</h4>
+              <p>Price: ${item.price.toFixed(2)}</p>
+              <div className="quantity-controls">
+                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                <span>{item.quantity}</span>
+                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+              </div>
+              <p>In Stock: {item.stock}</p>
+              <p>Subtotal: ${(item.quantity * item.price).toFixed(2)}</p>
+              <button onClick={() => removeFromCart(item.id)} className='remove-from-cart-button'>Remove</button>
             </div>
-            <p>In Stock: {item.stock}</p>
-            <p>Subtotal: ${(item.quantity * item.price).toFixed(2)}</p>
-            <button onClick={() => removeFromCart(item.id)} className='remove-from-cart-button'>Remove</button>
           </div>
-        </div>
-      ))}
-      <div className="cart-actions">
-        {cartItems.length > 0 && (
+        ))
+      ) : (
+        isLoggedIn ? (
+          <p className='cart-empty-message'>Your cart is empty. <button onClick={handleContinueShopping} className="continue-shopping-button">Continue Shopping</button></p>
+        ) : (
+          <p className='cart-empty-message'>Please <button onClick={() => navigate('/login')} className="login-button">log in</button> to view your cart.</p>
+        )
+      )}
+      {cartItems.length > 0 && (
+        <div className="cart-actions">
           <div className="cart-summary">
             <p className="cart-total">Total: ${cartItems.reduce((total, item) => total + item.quantity * item.price, 0).toFixed(2)}</p>
-            <button onClick={handleProceedToOrder} className="proceed-to-order-button">
-              Proceed to Checkout
-            </button>
+            <button onClick={handleProceedToOrder} className="proceed-to-order-button button-common">Proceed to Checkout</button>
           </div>
-        )}
-        <button onClick={handleContinueShopping} className="continue-shopping-button">
-          <p className='continue-shopping'>Continue Shopping</p>
-        </button>
-      </div>
+          <button onClick={handleContinueShopping} className="continue-shopping-button button-common">Continue Shopping</button>
+        </div>
+      )}
     </div>
   );
-
 
 };
 

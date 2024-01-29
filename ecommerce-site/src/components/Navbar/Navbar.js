@@ -4,7 +4,7 @@ import { AuthContext, CartContext } from '../../App';
 import './NavBar.css';
 
 const NavBar = () => {
-    const { isLoggedIn, setIsLoggedIn, setUser } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn, setUser, resetModalTrigger } = useContext(AuthContext);
     const { cartItems } = useContext(CartContext)
     const { setCartItems } = useContext(CartContext);
     const navigate = useNavigate();
@@ -16,9 +16,13 @@ const NavBar = () => {
         setIsLoggedIn(false);
         setUser(null);
         setCartItems([]);
+
+        if (resetModalTrigger) resetModalTrigger();
+
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         localStorage.removeItem('cartItems');
+        localStorage.removeItem('cartAbandonedTime')
         navigate('/');
     }
 

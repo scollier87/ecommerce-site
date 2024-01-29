@@ -10,6 +10,7 @@ const Shop = () => {
       try {
         const response = await fetch('https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Products.json');
         const data = await response.json();
+        console.log(data)
         const loadedProducts = [];
 
         for (const key in data) {
@@ -48,4 +49,3 @@ const Shop = () => {
 };
 
 export default Shop;
-

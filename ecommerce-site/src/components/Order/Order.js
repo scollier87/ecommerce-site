@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext, CartContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import './Order.css'
