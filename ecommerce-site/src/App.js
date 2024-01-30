@@ -7,7 +7,7 @@ import Shop from './components/Shop/Shop';
 import Cart from './components/Cart/Cart';
 import Order from './components/Order/Order';
 import Orders from './components/ViewOrders/ViewOrders';
-import Modal from './components/Modal/Modal';
+import NavigateModal from './components/NavigateModal/NavigateModal';
 import './App.css'
 
 export const AuthContext = React.createContext({
@@ -103,20 +103,14 @@ const handleResetCart = async () => {
   if (user && user.uid) {
     const url = `https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${user.uid}/cart.json`;
     try {
-      const response = await fetch(url, {
+      await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({}),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to clear cart in Firebase.');
-      }
-
       console.log('Cart cleared in Firebase.');
-
       localStorage.removeItem('cartItems');
     } catch (error) {
       console.error('Error clearing cart in Firebase:', error);
@@ -124,29 +118,35 @@ const handleResetCart = async () => {
   }
 };
 
+const modalActions = [
+  { type: 'navigate', path: '/shop', label: 'Continue Shopping' },
+  { type: 'navigate', path: '/cart', label: 'Proceed to Order' },
+  { type: 'function', fn: handleResetCart, label: 'Reset Cart' }
+];
 
 console.log(`Modal shown: ${showModal}`);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser}}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
       <CartContext.Provider value={{ cartItems, setCartItems }}>
         <Router>
           <NavBar />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/order" element={<Order />} />
-            <Route path="/viewOrders" element={<Orders />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/order" element={<Order />} />
+              <Route path="/viewOrders" element={<Orders />} />
           </Routes>
-          {showModal && (
-            <Modal isOpen={showModal} onClose={handleContinueShopping} title="Abandoned Cart Detected">
-              <p>You have items in your cart. Would you like to complete your order?</p>
-              <button onClick={handleContinueShopping}>Continue Shopping</button>
-              <button onClick={handleResetCart}>Reset Cart</button>
-            </Modal>
-          )}
+          <NavigateModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            actions={modalActions}
+            title="Abandoned Cart Detected"
+          >
+            <p>You have items in your cart. Would you like to complete your order?</p>
+          </NavigateModal>
         </Router>
       </CartContext.Provider>
     </AuthContext.Provider>
