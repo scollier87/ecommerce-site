@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Modal/Modal';
+import './NavigateModal.css'
 
 const NavigateModal = ({ isOpen, onClose, actions, title, children }) => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const NavigateModal = ({ isOpen, onClose, actions, title, children }) => {
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       {children}
       {actions.map((action, index) => (
-        <button key={index} onClick={() => handleAction(action)}>
+        <button key={index} className="modal-button" onClick={() => handleAction(action)}>
           {action.label}
         </button>
       ))}
