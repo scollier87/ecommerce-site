@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import { CartContext, AuthContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import './Cart.css';
@@ -8,24 +8,30 @@ const Cart = () => {
   const { isLoggedIn, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const fetchCartFromFirebase = async (userId) => {
+  const fetchCartFromFirebase = useCallback(async (userId) => {
     const url = `https://ecommerce-site-bae1b-default-rtdb.firebaseio.com/data/Users/${userId}/cart.json`;
     try {
       const response = await fetch(url);
-      const cartData = await response.json();
       if (!response.ok) throw new Error('Failed to fetch cart.');
-      setCartItems(cartData ? Object.values(cartData) : []);
+      const cartData = await response.json();
+      const itemsArray = cartData ? Object.values(cartData) : [];
+      setCartItems(itemsArray);
+      localStorage.setItem('cartItems', JSON.stringify(itemsArray));
     } catch (error) {
-      console.error('Error fetching cart:', error);
+      console.error('Error fetching cart from Firebase:', error);
+      const localCart = localStorage.getItem('cartItems');
+      if (localCart) {
+        setCartItems(JSON.parse(localCart));
+      }
     }
-  };
+  }, [setCartItems]);
 
-  // Fetch cart from Firebase when user logs in
+
   useEffect(() => {
     if (user && user.uid) {
       fetchCartFromFirebase(user.uid);
     }
-  }, [user, setCartItems]);
+  }, [user, fetchCartFromFirebase]);
 
   const updateCartInFirebaseAndLocally = async (updatedCartItems) => {
     if (!user || !user.uid) {
