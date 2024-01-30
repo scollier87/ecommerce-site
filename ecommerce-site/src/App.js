@@ -92,10 +92,6 @@ function App() {
     }
   }, [user])
 
-const handleContinueShopping = () => {
-  setShowModal(false);
-};
-
 const handleResetCart = async () => {
   setShowModal(false);
   setCartItems([]);
